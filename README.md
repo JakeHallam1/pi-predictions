@@ -6,6 +6,8 @@ Runs calculations for potential maximum wind speed, minimum pressure (at eye of 
 
 Inputs are provided as command-line arguments when running pi_predictions.py. Python script makes a request to a REST API. The REST API requests atmospheric sounding data from the University of Wyoming and ocean temperature data from ocean gliders and research cruises.
 
+The REST API then sends a request to a PI REST API where the data is run through a PI Model Python script. Results are then sent back to the Python frontend for outputting.
+
 Outputs are stored to a CSV file and full logs containing all data and metadata used is stored to a JSON file within a logs folder
 
 ## Getting Started
