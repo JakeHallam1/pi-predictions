@@ -54,7 +54,7 @@ python3 pi_predictions.py --help
 ## Authors
 
 Jake Hallam
-[ja.hallam11@gmail.com](mailto:ja.hallam11@gmail.com?subject=PI Predictions)
+[ja.hallam11@gmail.com](mailto:ja.hallam11@gmail.com)
 
 ## Version History
 
