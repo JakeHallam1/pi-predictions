@@ -19,7 +19,11 @@ Outputs are stored to a CSV file and full logs containing all data and metadata 
 ### Installing
 
 Simply clone this repository to your machine and run
-'''pip3 install -r /path/to/requirements.txt'''
+
+```
+pip3 install -r /path/to/requirements.txt
+```
+
 using the path to requirements.txt within your cloned repository.
 
 ### Executing program
