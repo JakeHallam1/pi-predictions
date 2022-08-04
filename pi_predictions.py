@@ -30,7 +30,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-d", type=int, dest='date_digits',
                     help="Date and time (format YYYYMMDDHH)")
 parser.add_argument("-t", type=str, dest='ocean_profile',
-                    help="""Temperature profile 'tX' where X is layer depth or 'sst' """)
+                    help="""Ocean sample depth 'tX' where X is layer depth or 'sst' """)
 parser.add_argument("-p", type=float, dest='slp',
                     help="Sea level Pressure (mb)", required=True)
 parser.add_argument("-o", type=str, dest='output_path', help="Output path")
