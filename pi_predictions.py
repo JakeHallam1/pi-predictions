@@ -16,7 +16,7 @@ CURRENT_PATH = Path(__file__).parent.resolve()
 DEFAULT_FILENAME = 'outputs.csv'
 
 # endpoints
-BACKEND_ENDPOINT = "http://192.168.1.135:5003/pi"
+BACKEND_ENDPOINT = "https://pi-backend-api.herokuapp.com/pi"
 
 # file headers
 CSV_HEADERS = ["Date Run", "Date Input", "Sea Level Pressure (mb)", "Ocean Temperature Profile", "Average Ocean Temperature", "Potential Maximum Wind Velocity (m/s)", "Minimum Pressure At Eye (mb)", "Outflow Temperature (K)", "Ocean Temperature Source",
@@ -27,8 +27,8 @@ MINIMUM_LAYER_DEPTH = 15
 
 # SYSTEM ARGUMENTS
 parser = argparse.ArgumentParser()
-parser.add_argument("-s", type=int, dest='date_digits',
-                    help="Sounding date and time (format YYYYMMDDHH)")
+parser.add_argument("-d", type=int, dest='date_digits',
+                    help="Date and time (format YYYYMMDDHH)")
 parser.add_argument("-t", type=str, dest='ocean_profile',
                     help="""Temperature profile 'tX' where X is layer depth or 'sst' """)
 parser.add_argument("-p", type=float, dest='slp',
@@ -119,6 +119,7 @@ def carve_path(path):
 # saves array of outputs to csv file at given path
 # if file does not exist at path, one is created
 def save_to_csv(path, data):
+    print("Saving outputs to CSV file {}".format(path))
     carve_path(path)
     if os.path.isfile(path) == True:
         with open(path) as csv_file:
@@ -144,6 +145,7 @@ def save_to_csv(path, data):
 def save_to_json(path, data):
     carve_path(path)
     with open(path, 'w') as json_file:
+        print("Saving full log to JSON file {}".format(path))
         json.dump(data, json_file, indent=4)
     return None
 
@@ -173,13 +175,22 @@ params = {
     "datetime": requested_datetime.isoformat(), "seaLevelPressure": SLP, "oceanLayerDepth": ocean_profile if ocean_profile > 0 else MINIMUM_LAYER_DEPTH, "sstFlag": True if ocean_profile == 0 else False}
 
 # makes GET request to backend, and returns response
+print("""Requesting data and predictions from PI REST API for:
+Date: {}
+Sea level pressure: {}
+Using:
+{}
+""".format(params["datetime"], params["seaLevelPressure"], "TOP {}m layer".format(ocean_profile)
+           if ocean_profile > 0 else "SST"))
+
 response = requests.get(BACKEND_ENDPOINT, params=params)
 
 # loads data from JSON response and generates array of outputs for csv file
 if(response.status_code == 200):
-
+    print("Success")
     data = json.loads(response.content)
 
+    # appends outputs to array, representing each column in output CSV file
     csv_data = []
     csv_data.append(datetime.now(tz=pytz.timezone(
         'UTC')).strftime("%Y-%m-%d %H:%M:%S"))
@@ -193,17 +204,20 @@ if(response.status_code == 200):
     csv_data.append(data['predictions']['data']['minimumCentralPressure'])
     csv_data.append(data['predictions']['data']['outflowTemperature'])
     csv_data.append(data['dataSources']['ocean']['metadata']['sourceName'])
-    csv_data.append(datetime(data['dataSources']['ocean']
-                    ['metadata']['timeframe']['start']).strftime("%Y-%m-%d %H:%M:%S"))
-    csv_data.append(datetime(data['dataSources']['ocean']
-                    ['metadata']['timeframe']['end']).strftime("%Y-%m-%d %H:%M:%S"))
-    csv_data.append(datetime(data['dataSources']['atmosphere']
-                    ['metadata']['timeframe']['start']).strftime("%Y-%m-%d %H:%M:%S"))
-    csv_data.append(datetime(data['dataSources']['atmosphere']
-                    ['metadata']['timeframe']['end']).strftime("%Y-%m-%d %H:%M:%S"))
+    csv_data.append(data['dataSources']['ocean']
+                    ['metadata']['timeframe']['start'])
+    csv_data.append(data['dataSources']['ocean']
+                    ['metadata']['timeframe']['end'])
+    csv_data.append(data['dataSources']['atmosphere']
+                    ['metadata']['timeframe']['start'])
+    csv_data.append(data['dataSources']['atmosphere']
+                    ['metadata']['timeframe']['end'])
     csv_data.append(log_path)
 
     # if calculations ran successfully, save outputs to csv file
     if data['predictions']['metadata']['outcome'] == "Successful":
         save_to_csv(output_path, csv_data)
         save_to_json(log_path, data)
+else:
+    # print error code
+    print("Error {}".format(response.status_code))
