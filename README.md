@@ -1,4 +1,5 @@
-# Potential Intensity Predictor (Beta)
+# Tropical Storm Potential Intensity Predictor (Bermuda)
+## Version 0.1.0-alpha
 
 Runs calculations for potential maximum wind speed, minimum pressure (at eye of storm) and outflow temperature given a date, sea level pressure and ocean sample depth.
 
@@ -55,15 +56,17 @@ python3 pi_predictions.py --help
 
 ## Authors
 
-Jake Hallam
+ - Jake Hallam - *Code development & maintenance*
 [ja.hallam11@gmail.com](mailto:ja.hallam11@gmail.com)
+ - Samantha Hallam, PhD - *Model research & developement* [samantha.hallam@mu.ie](mailto:samantha.hallam@mu.ie)
 
 ## Version History
 
-- 0.1
-  - Initial prototype release (Beta testing)
+ - 0.1.0-alpha
+  - Initial prototype release (Alpha)
 
 ## Acknowledgments
 
+Model based on research from Samantha Hallam et al 2021 Environ. Res. Lett.
 Program utilises pyPI from Daniel Gilford to calculate minimum pressure
 Gilford, D. M. 2020: pyPI: Potential Intensity Calculations in Python, v1.2, Zenodo, doi:10.5281/zenodo.3900548
