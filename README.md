@@ -67,6 +67,6 @@ python3 pi_predictions.py --help
 
 ## Acknowledgments
 
-Model based on research from Samantha Hallam et al 2021 Environ. Res. Lett.
-Program utilises pyPI from Daniel Gilford to calculate minimum pressure
+ - Model based on research from Samantha Hallam et al 2021 Environ. Res. Lett.
+ - Program utilises pyPI from Daniel Gilford to calculate minimum pressure
 Gilford, D. M. 2020: pyPI: Potential Intensity Calculations in Python, v1.2, Zenodo, doi:10.5281/zenodo.3900548
