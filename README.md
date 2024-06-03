@@ -58,7 +58,7 @@ python3 pi_predictions.py --help
 
  - Jake Hallam - *Code development & maintenance*
 [ja.hallam11@gmail.com](mailto:ja.hallam11@gmail.com)
- - Samantha Hallam, PhD - *Model research & developement* [samantha.hallam@mu.ie](mailto:samantha.hallam@mu.ie)
+ - Samantha Hallam, PhD - *Model research & development* [samantha.hallam@mu.ie](mailto:samantha.hallam@mu.ie)
 
 ## Version History
 
