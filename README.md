@@ -67,6 +67,6 @@ python3 pi_predictions.py --help
 
 ## Acknowledgments
 
- - Model based on research from Samantha Hallam et al 2021 Environ. Res. Lett.
+ - Model based on research from Hallam, Samantha, et al. "Increasing tropical cyclone intensity and potential intensity in the subtropical Atlantic around Bermuda from an ocean heat content perspective 1955–2019." Environmental Research Letters 16.3 (2021): 034052. DOI 10.1088/1748-9326/abe493
  - Program utilises pyPI from Daniel Gilford to calculate minimum pressure
 Gilford, D. M. 2020: pyPI: Potential Intensity Calculations in Python, v1.2, Zenodo, doi:10.5281/zenodo.3900548
