@@ -30,7 +30,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-d", type=int, dest='date_digits',
                     help="Date and time (format YYYYMMDDHH)")
 parser.add_argument("-t", type=str, dest='ocean_profile',
-                    help="""Ocean sample depth 'tX' where X is layer depth or 'sst' """)
+                    help="""Ocean sample depth 'tX' where X is layer depth, 'sst' or 'man' for manual input.""")
 parser.add_argument("-p", type=float, dest='slp',
                     help="Sea level Pressure (mb)", required=True)
 parser.add_argument("-o", type=str, dest='output_path', help="Output path")
@@ -78,10 +78,17 @@ def get_datetime_from_digits(digits):
     else:
         argument_error([str_digits])
 
+def get_manual_flag(raw_input):
+    manual_flag = str(raw_input).lower()
+    if(manual_flag == 'man'):
+        return True
+    else:
+        return False
 
 # returns ocean layer depth from aregument - sst returns 0, tX returns X as number
 def get_ocean_profile_depth(raw_input):
     input_profile = str(raw_input).lower()
+
     if(input_profile == "sst"):
         return 0
     elif(re.match(r"t[0-9]+", input_profile)):
@@ -155,9 +162,26 @@ def save_to_json(path, data):
 requested_datetime = get_datetime_from_digits(
     args.date_digits) if args.date_digits is not None else datetime.now(tz=pytz.timezone("UTC"))
 
+manual_flag = False
+manual_input = 0
+
+if(re.match(r"[0-9]+", str(args.ocean_profile).lower())):
+    try:
+        manual_input = float(args.ocean_profile)
+        manual_flag = True
+    except:
+        argument_error([args.ocean_profile])
+
+ocean_profile = ''
+
 # ocean profile - if omitted, uses top 50m layer
-ocean_profile = get_ocean_profile_depth(
-    args.ocean_profile) if args.ocean_profile is not None else 50
+
+if manual_flag:
+    ocean_profile = 'Manual input'
+elif args.ocean_profile is not None:
+    ocean_profile = get_ocean_profile_depth(args.ocean_profile)
+else:
+    ocean_profile = 50
 
 # sea level pressure
 SLP = get_slp(args.slp)
@@ -172,7 +196,15 @@ log_path = output_path.parent.joinpath('logs').joinpath(
 
 # url parameters
 params = {
-    "datetime": requested_datetime.isoformat(), "seaLevelPressure": SLP, "oceanLayerDepth": ocean_profile if ocean_profile > 0 else MINIMUM_LAYER_DEPTH, "sstFlag": True if ocean_profile == 0 else False}
+    "datetime": requested_datetime.isoformat(), "seaLevelPressure": SLP, "oceanLayerDepth": 0 if manual_flag else max(get_ocean_profile_depth(args.ocean_profile),MINIMUM_LAYER_DEPTH) , "sstFlag": True if ocean_profile == 0 else False, 'manualFlag': True if manual_flag else False, 'manualInput': manual_input}
+
+def get_ocean_profile_used():
+    if(manual_flag):
+        return "Manual input of {}°C".format(manual_input)
+    if ocean_profile == 0:
+        return "SST"
+    else:
+        return "TOP {}m layer".format(ocean_profile)
 
 # makes GET request to backend, and returns response
 print("""Requesting data and predictions from PI REST API for:
@@ -180,8 +212,7 @@ Date: {}
 Sea level pressure: {}
 Using:
 {}
-""".format(params["datetime"], params["seaLevelPressure"], "TOP {}m layer".format(ocean_profile)
-           if ocean_profile > 0 else "SST"))
+""".format(params["datetime"], params["seaLevelPressure"], get_ocean_profile_used()))
 
 response = requests.get(BACKEND_ENDPOINT, params=params)
 
@@ -196,8 +227,7 @@ if(response.status_code == 200):
         'UTC')).strftime("%Y-%m-%d %H:%M:%S"))
     csv_data.append(requested_datetime.strftime("%Y-%m-%d %H:%M:%S"))
     csv_data.append(SLP)
-    csv_data.append("TOP {}m layer".format(ocean_profile)
-                    if ocean_profile > 0 else "SST")
+    csv_data.append(get_ocean_profile_used())
     csv_data.append(data['dataSources']['ocean']
                     ['metadata']['averageTemperatureUsed'])
     csv_data.append(data['predictions']['data']['maximumWindSpeed'])
