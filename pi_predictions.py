@@ -172,9 +172,16 @@ if(re.match(r"[0-9]+", str(args.ocean_profile).lower())):
     except:
         argument_error([args.ocean_profile])
 
+ocean_profile = ''
+
 # ocean profile - if omitted, uses top 50m layer
-ocean_profile = get_ocean_profile_depth(
-    args.ocean_profile) if not manual_flag and args.ocean_profile is not None else 50
+
+if manual_flag:
+    ocean_profile = 'Manual input'
+elif args.ocean_profile is not None:
+    ocean_profile = get_ocean_profile_depth(args.ocean_profile)
+else:
+    ocean_profile = 50
 
 # sea level pressure
 SLP = get_slp(args.slp)
@@ -189,7 +196,7 @@ log_path = output_path.parent.joinpath('logs').joinpath(
 
 # url parameters
 params = {
-    "datetime": requested_datetime.isoformat(), "seaLevelPressure": SLP, "oceanLayerDepth": ocean_profile if ocean_profile > 0 else MINIMUM_LAYER_DEPTH, "sstFlag": True if ocean_profile == 0 else False, 'manualFlag': manual_flag, 'manualInput': manual_input}
+    "datetime": requested_datetime.isoformat(), "seaLevelPressure": SLP, "oceanLayerDepth": 0 if manual_flag else max(get_ocean_profile_depth(args.ocean_profile),MINIMUM_LAYER_DEPTH) , "sstFlag": True if ocean_profile == 0 else False, 'manualFlag': True if manual_flag else False, 'manualInput': manual_input}
 
 def get_ocean_profile_used():
     if(manual_flag):
@@ -220,8 +227,7 @@ if(response.status_code == 200):
         'UTC')).strftime("%Y-%m-%d %H:%M:%S"))
     csv_data.append(requested_datetime.strftime("%Y-%m-%d %H:%M:%S"))
     csv_data.append(SLP)
-    csv_data.append("TOP {}m layer".format(ocean_profile)
-                    if ocean_profile > 0 else "SST")
+    csv_data.append(get_ocean_profile_used())
     csv_data.append(data['dataSources']['ocean']
                     ['metadata']['averageTemperatureUsed'])
     csv_data.append(data['predictions']['data']['maximumWindSpeed'])
