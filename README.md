@@ -1,5 +1,5 @@
 # Tropical Storm Potential Intensity Predictor (Bermuda)
-## Version 0.1.0-alpha
+## Version 0.2.0
 
 Runs calculations for potential maximum wind speed, minimum pressure (at eye of storm) and outflow temperature given a date, sea level pressure and ocean sample depth.
 
@@ -35,14 +35,25 @@ using the path to requirements.txt within your cloned repository.
 
 Example command:
 
+#### Using top 50m layer
 ```
-python3 pi_predictions.py -d 2022070412 -p 1020
+python3 pi_predictions.py -d 2024060412 -p 1020 -t t50
+```
+
+#### Using sea surface temperature
+```
+python3 pi_predictions.py -d 2024060412 -p 1020 -t sst
+```
+
+#### Using manual ocean temperature input
+```
+python3 pi_predictions.py -d 2024060412 -p 1020 -t 24.6
 ```
 
 #### Command-line arguments
 
     -d datetime (YYYYMMDDHH)
-    -t Ocean sample depth ('tX' where X is layer depth or 'sst')
+    -t Ocean sample depth ('tX' where X is layer depth or 'sst' or 'X' where X is ocean temperature)
     -p sea level pressure (mb)
     -o CSV output path (path/to/output/file/your_file_name.csv)
 
@@ -62,8 +73,9 @@ python3 pi_predictions.py --help
 
 ## Version History
 
- - 0.1.0-alpha
-  - Initial prototype release (Alpha)
+ - 0.1.0-alpha - Initial prototype release (Alpha)
+ - 0.2.0 - 10/06/2024 - Support for manual ocean temperature input
+   
 
 ## Acknowledgments
 
