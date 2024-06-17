@@ -250,4 +250,5 @@ if(response.status_code == 200):
         save_to_json(log_path, data)
 else:
     # print error code
-    print("Error {}".format(response.status_code))
+  
+    print("Error: {}".format(response.text))
