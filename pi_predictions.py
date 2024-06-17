@@ -16,7 +16,7 @@ CURRENT_PATH = Path(__file__).parent.resolve()
 DEFAULT_FILENAME = 'outputs.csv'
 
 # endpoints
-BACKEND_ENDPOINT = "https://pi-backend-api.herokuapp.com/pi"
+BACKEND_ENDPOINT = 'http://localhost:80/pi'#"https://pi-backend-api.herokuapp.com/pi"
 
 # file headers
 CSV_HEADERS = ["Date Run", "Date Input", "Sea Level Pressure (mb)", "Ocean Temperature Profile", "Average Ocean Temperature", "Potential Maximum Wind Velocity (m/s)", "Minimum Pressure At Eye (mb)", "Outflow Temperature (K)", "Ocean Temperature Source",
@@ -250,4 +250,5 @@ if(response.status_code == 200):
         save_to_json(log_path, data)
 else:
     # print error code
-    print("Error {}".format(response.status_code))
+  
+    print("Error: {}".format(response.text))
